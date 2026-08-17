@@ -27,7 +27,13 @@ const ROLL_FLAVOR = [
   "🎲 ใครจะซวยวันนี้...",
 ];
 
-const ROLL_EMOJI_BY_VALUE = { 1: "💀", 2: "😬", 3: "😐", 4: "😎", 5: "🔥" };
+const ROLL_EMOJI_BY_VALUE = {
+  1: "🔥",
+  2: "😎",
+  3: "😐",
+  4: "😬",
+  5: "💀",
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -80,11 +86,11 @@ module.exports = {
 
       let unluckyLine = "";
       if (rolls.size) {
-        const minRoll = Math.min(...rolls.values());
+        const maxRoll = Math.max(...rolls.values());
         const unluckyNames = [...rolls.entries()]
-          .filter(([, r]) => r === minRoll)
+          .filter(([, r]) => r === maxRoll)
           .map(([id]) => `<@${id}>`);
-        unluckyLine = `💀 ผู้โชคร้ายที่สุด: ${unluckyNames.join(", ")} (ทอยได้ ${minRoll})`;
+        unluckyLine = `💀 ผู้โชคร้ายที่สุด: ${unluckyNames.join(", ")} (ทอยได้ ${maxRoll})`;
       }
 
       // embed #1: image only — Discord renders embeds in array order, image-first this way
@@ -105,19 +111,14 @@ module.exports = {
           { name: "รวม (Sum)", value: `${total}`, inline: true },
           { name: "เฉลี่ย (Average)", value: `${avg}`, inline: true },
         )
-        .setFooter({ text: "จบเซสชัน" })
         .setTimestamp();
 
       return [imageEmbed, statsEmbed];
     };
 
-    const buildRollMessageEmbed = (userId, username, roll) =>
-      new EmbedBuilder()
-        .setDescription(
-          `${ROLL_FLAVOR[Math.floor(Math.random() * ROLL_FLAVOR.length)]}\n\n` +
-            `<@${userId}> **(${username})** ทอยได้ **${roll}** ${ROLL_EMOJI_BY_VALUE[roll]}`,
-        )
-        .setColor(0xff0000);
+    const buildRollMessageContent = (userId, username, roll) =>
+      `<@${userId}> ${ROLL_FLAVOR[Math.floor(Math.random() * ROLL_FLAVOR.length)]}\n` +
+      `ทอยได้ **${roll}** ${ROLL_EMOJI_BY_VALUE[roll]}`;
 
     const runRollSequence = async () => {
       const channel = message.channel;
@@ -128,8 +129,7 @@ module.exports = {
         rolls.set(userId, roll);
         await channel
           .send({
-            content: `<@${userId}>`, // actually pings — embeds alone don't trigger notifications
-            embeds: [buildRollMessageEmbed(userId, username, roll)],
+            content: buildRollMessageContent(userId, username, roll),
           })
           .catch(() => {});
       }
@@ -178,8 +178,9 @@ module.exports = {
             ephemeral: true,
           });
         }
-
-        participants.set(btnInteraction.user.id, btnInteraction.user.username);
+        const displayName =
+          btnInteraction.member?.displayName ?? btnInteraction.user.username;
+        participants.set(btnInteraction.user.id, displayName);
 
         // enable start button once at least 1 player joined
         startButton.setDisabled(participants.size === 0);
