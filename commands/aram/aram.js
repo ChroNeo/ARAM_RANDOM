@@ -92,21 +92,18 @@ module.exports = {
           .map(([id]) => `<@${id}>`);
         unluckyLine = `💀 ผู้โชคร้ายที่สุด: ${unluckyNames.join(", ")} (ทอยได้ ${maxRoll})`;
       }
-      const zeusRule = (avg) => {
-        if (zeusRoll()) {
-          SUMMARY_IMAGE_URL =
-            "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532";
-          avg = Math.floor(avg);
-        } else {
-          avg = Math.ceil(avg);
-        }
-        return avg;
-      };
+
+      // Determine Zeus rule and image URL for this game session only
+      const isZeus = zeusRoll();
+      const zeusRule = (avg) => (isZeus ? Math.floor(avg) : Math.ceil(avg));
+      const currentImageUrl = isZeus
+        ? "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532"
+        : SUMMARY_IMAGE_URL;
 
       // embed #1: image only — Discord renders embeds in array order, image-first this way
       const imageEmbed = new EmbedBuilder()
         .setColor(0xff0000)
-        .setImage(SUMMARY_IMAGE_URL);
+        .setImage(currentImageUrl);
 
       // embed #2: the actual stats, follows right below the image
       const statsEmbed = new EmbedBuilder()
