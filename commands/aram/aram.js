@@ -95,7 +95,7 @@ module.exports = {
 
       // Determine Zeus rule and image URL for this game session only
       const isZeus = zeusRoll();
-      const zeusRule = (avg) => (isZeus ? Math.floor(avg) : Math.ceil(avg));
+      const zeusRule = (avg) => (isZeus ? Math.ceil(avg) : Math.floor(avg));
       const currentImageUrl = isZeus
         ? "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532"
         : SUMMARY_IMAGE_URL;
