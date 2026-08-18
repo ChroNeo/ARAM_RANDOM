@@ -12,12 +12,12 @@ const DICE_SIDES = 5; // 1d5
 const ROLL_DELAY_MS = 1500; // suspense delay between each reveal
 const IMAGE_URL =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwICgv1MKLXoEaJ_VHCYmsRh6Orq1Far-3ZplpMNgG2w&s";
-const SUMMARY_IMAGE_URL =
+let SUMMARY_IMAGE_URL =
   "https://i.redd.it/sukuna-meme-v0-ih2umntcd58h1.jpg?width=480&format=pjpg&auto=webp&s=06ef533a8f215c8e05c33b62246e0133014cb140";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const rollDice = () => Math.floor(Math.random() * DICE_SIDES) + 1; // 1..5
-
+const zeusRoll = () => Math.random() < 0.5; // true = zeus, false = not zeus
 // random flavor lines to make each roll message feel alive
 const ROLL_FLAVOR = [
   "🎲 ตัวเต๋ากลิ้งไปกลิ้งมา...",
@@ -92,7 +92,10 @@ module.exports = {
           .map(([id]) => `<@${id}>`);
         unluckyLine = `💀 ผู้โชคร้ายที่สุด: ${unluckyNames.join(", ")} (ทอยได้ ${maxRoll})`;
       }
-
+      if (zeusRoll()) {
+        SUMMARY_IMAGE_URL =
+          "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532";
+      }
       // embed #1: image only — Discord renders embeds in array order, image-first this way
       const imageEmbed = new EmbedBuilder()
         .setColor(0xff0000)
