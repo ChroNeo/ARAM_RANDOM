@@ -72,7 +72,7 @@ module.exports = {
         .setColor(0xff0000)
         .setImage(IMAGE_URL)
         .addFields({
-          name: `รายชื่อผู้เข้าร่วม (${participants.size}/${MAX_PLAYERS})`,
+          name: `ผู้เข้าร่วม (${participants.size}/${MAX_PLAYERS})`,
           value: buildParticipantList(),
         })
         .setFooter({
