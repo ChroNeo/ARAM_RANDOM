@@ -92,10 +92,17 @@ module.exports = {
           .map(([id]) => `<@${id}>`);
         unluckyLine = `💀 ผู้โชคร้ายที่สุด: ${unluckyNames.join(", ")} (ทอยได้ ${maxRoll})`;
       }
-      if (zeusRoll()) {
-        SUMMARY_IMAGE_URL =
-          "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532";
-      }
+      const zeusRule = (avg) => {
+        if (zeusRoll()) {
+          SUMMARY_IMAGE_URL =
+            "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532";
+          avg = Math.floor(avg);
+        } else {
+          avg = Math.ceil(avg);
+        }
+        return avg;
+      };
+
       // embed #1: image only — Discord renders embeds in array order, image-first this way
       const imageEmbed = new EmbedBuilder()
         .setColor(0xff0000)
@@ -113,6 +120,7 @@ module.exports = {
           },
           { name: "รวม (Sum)", value: `${total}`, inline: true },
           { name: "เฉลี่ย (Average)", value: `${avg}`, inline: true },
+          { name: "ต้องเล่นทั้งหมด", value: `${zeusRule(avg)}` },
         )
         .setTimestamp();
 
