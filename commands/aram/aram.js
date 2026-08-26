@@ -10,10 +10,20 @@ const {
 const MAX_PLAYERS = 5;
 const DICE_SIDES = 5; // 1d5
 const ROLL_DELAY_MS = 1500; // suspense delay between each reveal
-const IMAGE_URL =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwICgv1MKLXoEaJ_VHCYmsRh6Orq1Far-3ZplpMNgG2w&s";
-let SUMMARY_IMAGE_URL =
-  "https://i.redd.it/sukuna-meme-v0-ih2umntcd58h1.jpg?width=480&format=pjpg&auto=webp&s=06ef533a8f215c8e05c33b62246e0133014cb140";
+const IMAGE_URL = "https://images7.alphacoders.com/140/thumb-1920-1407535.png";
+
+// Images for each average result value (1-5) - replace with your own URLs
+const AVG_IMAGES = {
+  1: "https://i.pinimg.com/1200x/79/6f/5e/796f5e70b9624887594d966f750c2db1.jpg",
+  2: "https://i.pinimg.com/736x/c2/59/be/c259be7580b5deec9eb9b92bd3a0aaa7.jpg",
+  3: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLcWLUBfjIFjOooYQkfRcpBCS6U-R4gbdX9eYM2MfzweuWvMTZQMw0pn4&s=10",
+  4: "https://i.pinimg.com/736x/5a/57/78/5a5778dae4a71b1cee024dfdb0733a6c.jpg",
+  5: "https://media.tenor.com/IwGh9rc-LaoAAAAe/sukuna-freak.png",
+};
+
+// Zeus image (shown when Zeus rule is active - ceil)
+const ZEUS_IMAGE =
+  "https://i.pinimg.com/736x/19/79/2c/19792cfbfc26b2a05ea36cbc00151d63.jpg";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const rollDice = () => Math.floor(Math.random() * DICE_SIDES) + 1; // 1..5
@@ -96,9 +106,12 @@ module.exports = {
       // Determine Zeus rule and image URL for this game session only
       const isZeus = zeusRoll();
       const zeusRule = (avg) => (isZeus ? Math.ceil(avg) : Math.floor(avg));
+      const finalResult = zeusRule(avg);
+
+      // Select image: Zeus image if Zeus rule active, otherwise based on final result
       const currentImageUrl = isZeus
-        ? "https://static.wikia.nocookie.net/ageofempires/images/1/14/AoMRT_Greek_Zeus.webp/revision/latest/scale-to-width-down/1200?cb=20250701110532"
-        : SUMMARY_IMAGE_URL;
+        ? ZEUS_IMAGE
+        : AVG_IMAGES[finalResult] || IMAGE_URL;
 
       // embed #1: image only — Discord renders embeds in array order, image-first this way
       const imageEmbed = new EmbedBuilder()
